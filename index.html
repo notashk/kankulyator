@@ -10,8 +10,8 @@
 <style>
 :root{
   --bg:#EEF0EE; --panel:#FFFFFF; --ink:#1D2125; --muted:#5F666D;
-  --line:#D5D9DC; --metal:#A7ADB3; --signal:#F2C230; --signal-ink:#1D2125;
-  --board:#23272C; --board-ink:#F7F8F6; --chip:#F4F5F4; --focus:#2F6FD6;
+  --line:#D5D9DC; --metal:#A7ADB3; --signal:#F2C230;
+  --chip:#F4F5F4; --focus:#2F6FD6; --board:#23272C;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -19,255 +19,504 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#16191C; --panel:#1F2327; --ink:#ECEEEC; --muted:#9AA1A8;
-    --line:#343A40; --metal:#6F767D; --board:#0E1012; --board-ink:#F7F8F6; --chip:#272C31; --focus:#7FA8F0;
+    --line:#343A40; --metal:#6F767D; --chip:#272C31; --focus:#7FA8F0; --board:#0E1012;
   }
 }
 :root[data-theme="dark"]{
   --bg:#16191C; --panel:#1F2327; --ink:#ECEEEC; --muted:#9AA1A8;
-  --line:#343A40; --metal:#6F767D; --board:#0E1012; --board-ink:#F7F8F6; --chip:#272C31; --focus:#7FA8F0;
+  --line:#343A40; --metal:#6F767D; --chip:#272C31; --focus:#7FA8F0; --board:#0E1012;
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:1120px;margin:0 auto;padding:32px 20px 64px}
+[hidden]{display:none!important}
+button{font-family:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 20px 64px}
+
+header{margin-bottom:28px}
 header h1{font:700 clamp(28px,4.5vw,44px)/1.1 "Unbounded","Onest",system-ui,sans-serif;margin:0 0 8px;letter-spacing:-.01em}
-header p{margin:0 0 32px;color:var(--muted);max-width:60ch}
-.grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:start}
-@media (max-width:880px){.grid{grid-template-columns:1fr}}
-.group{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 22px 8px;margin-bottom:20px}
-.group>h2{font:500 20px/1.2 "Unbounded","Onest",system-ui,sans-serif;margin:0 0 4px}
-.group>.hint{color:var(--muted);font-size:14px;margin:0 0 18px}
-.sub{border-top:1px solid var(--line);padding-top:18px;margin-top:6px}
-.sub h3{font-size:17px;font-weight:600;margin:0 0 12px}
-.size{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
-.size label{font-weight:500}
-.size .field{display:flex;align-items:center;border:1.5px solid var(--metal);border-radius:10px;background:var(--chip);overflow:hidden}
-.size input{width:120px;border:0;background:transparent;color:var(--ink);font:600 18px "Onest",system-ui,sans-serif;padding:10px 12px;outline:none}
-.size .unit{padding:0 12px;color:var(--muted);font-size:14px}
-.size .field:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 25%,transparent)}
-.size input:disabled{color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1;cursor:default}
-.size .field.calc{border-style:dashed;background:transparent}
-.dims{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
-.dims .field,.lrow .field{display:flex;align-items:center;border:1.5px solid var(--metal);border-radius:10px;background:var(--chip);overflow:hidden}
-.dims .field:focus-within,.lrow .field:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 25%,transparent)}
-.dims .tag,.lrow .tag{padding:0 0 0 12px;color:var(--muted);font-size:14px;font-weight:600}
-.dims input,.lrow input{width:84px;border:0;background:transparent;color:var(--ink);font:600 17px "Onest",system-ui,sans-serif;padding:9px 8px;outline:none}
-.dims .unit,.lrow .unit{padding:0 10px 0 0;color:var(--muted);font-size:13px}
+header p{margin:0;color:var(--muted);max-width:62ch}
+
+/* Экран 1 */
+.lead{font:500 clamp(18px,2.4vw,22px)/1.3 "Unbounded","Onest",system-ui,sans-serif;margin:0 0 16px}
+.choose{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:760px){.choose{grid-template-columns:1fr}}
+.card{display:block;width:100%;text-align:left;padding:12px 12px 18px;border:1.5px solid var(--line);border-radius:18px;background:var(--panel);color:var(--ink);cursor:pointer;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--ink)}
+.card:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.card svg{display:block;width:100%;height:auto;border-radius:12px}
+.card b{display:block;font:600 22px/1.2 "Unbounded","Onest",system-ui,sans-serif;margin:16px 8px 4px}
+.card span{display:block;color:var(--muted);margin:0 8px}
+
+/* Экран 2 */
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.stage.backing .pic{order:2}
+@media (max-width:860px){.stage{grid-template-columns:1fr}.stage.backing .pic{order:-1}}
+.pic{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--panel);border:1.5px solid var(--ink);border-radius:18px;padding:12px 12px 16px}
+@media (max-width:860px){.pic{position:static}}
+.pic svg{display:block;width:100%;height:auto;border-radius:12px}
+.pic .cap{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:14px 8px 0}
+.pic .cap b{font:600 20px/1.2 "Unbounded","Onest",system-ui,sans-serif}
+.pic .cap button{border:0;background:none;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:14px;padding:4px}
+.pic .cap button:hover{color:var(--ink)}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 24px 22px;min-height:100%}
+.panel.enter{animation:enter .28s ease-out}
+@keyframes enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px;padding:0;list-style:none}
+.steps button{border:1px solid var(--line);background:var(--chip);color:var(--muted);border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer}
+.steps button[aria-current="step"]{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.steps button.done{color:var(--ink)}
+.steps button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.count{color:var(--muted);font-size:14px;margin:0 0 4px}
+.panel h2{font:600 clamp(22px,2.8vw,28px)/1.2 "Unbounded","Onest",system-ui,sans-serif;margin:0 0 6px}
+.panel .hint{color:var(--muted);font-size:15px;margin:0 0 18px;max-width:52ch}
+
+.opts{display:flex;flex-direction:column;gap:10px;margin:0 0 20px;border:0;padding:0}
+.opt{position:relative;display:block}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt>span{display:grid;grid-template-columns:1fr auto;gap:2px 16px;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;background:var(--chip);cursor:pointer;transition:border-color .15s,background .15s}
+.opt>span:hover{border-color:var(--metal)}
+.opt b{font-weight:600;font-size:17px}
+.opt i{font-style:normal;font-weight:600;white-space:nowrap;align-self:center;grid-row:span 2}
+.opt small{color:var(--muted);font-size:14px}
+.opt input:checked+span{border-color:var(--ink);background:var(--panel);box-shadow:inset 5px 0 0 var(--signal)}
+.opt input:focus-visible+span{outline:3px solid var(--focus);outline-offset:2px}
+
+.size{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.size>label,.size>span.l{font-weight:500}
+.field{display:flex;align-items:center;border:1.5px solid var(--metal);border-radius:10px;background:var(--chip);overflow:hidden}
+.field:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 25%,transparent)}
+.field input{border:0;background:transparent;color:var(--ink);font:600 17px "Onest",system-ui,sans-serif;padding:9px 8px 9px 12px;outline:none;width:110px}
+.field .tag{padding:0 0 0 12px;color:var(--muted);font-size:14px;font-weight:600}
+.field .tag+input{padding-left:8px;width:80px}
+.field .unit{padding:0 12px 0 0;color:var(--muted);font-size:13px}
+.field.calc{border-style:dashed;background:transparent}
+.field input:disabled{color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1}
+.dims{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
 .lrows{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
 .lrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.lrow .eq{color:var(--muted);font-size:14px;min-width:80px}
+.lrow .eq{color:var(--muted);font-size:14px;min-width:70px}
 .icon-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
 .icon-btn:hover{border-color:var(--metal);color:var(--ink)}
-.icon-btn:focus-visible,.add:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.add{display:inline-flex;align-items:center;gap:8px;margin:0 0 18px;padding:9px 14px;border-radius:10px;border:1.5px dashed var(--metal);background:transparent;color:var(--ink);font:500 15px "Onest",system-ui,sans-serif;cursor:pointer}
+.add{display:inline-flex;align-items:center;gap:8px;margin:0 0 18px;padding:9px 14px;border-radius:10px;border:1.5px dashed var(--metal);background:transparent;color:var(--ink);font-size:15px;font-weight:500;cursor:pointer}
 .add b{font-size:20px;line-height:1}
 .add:hover{border-style:solid}
-fieldset{border:0;margin:0 0 16px;padding:0}
-legend{font-size:14px;color:var(--muted);margin-bottom:8px;padding:0}
-.opts{display:flex;flex-wrap:wrap;gap:8px}
-.opt{position:relative}
-.opt input{position:absolute;opacity:0;pointer-events:none}
-.opt span{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--chip);cursor:pointer;min-width:150px;transition:border-color .15s,background .15s}
-.opt small{color:var(--muted);font-size:13px}
-.opt input:checked+span{border-color:var(--ink);background:var(--panel);box-shadow:inset 4px 0 0 var(--signal)}
-.opt input:focus-visible+span{outline:3px solid var(--focus);outline-offset:2px}
-.opt span:hover{border-color:var(--metal)}
 
-aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}
-.board{background:var(--board);color:var(--board-ink);border-radius:16px;padding:24px;box-shadow:0 0 0 6px var(--metal) inset,0 0 0 1px #000 inset}
-.board .cap{font-size:14px;opacity:.7;margin:0 0 6px}
-.total{font:700 clamp(34px,5vw,44px)/1.05 "Unbounded","Onest",system-ui,sans-serif;color:var(--signal);text-shadow:0 0 18px color-mix(in srgb,var(--signal) 45%,transparent);margin:0 0 20px;word-break:break-word}
-.rows{border-top:1px solid rgba(255,255,255,.14);padding-top:14px}
-.row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:15px}
-.row .f{display:block;font-size:12.5px;opacity:.6}
-.row b{font-weight:600;white-space:nowrap}
-.reset{margin-top:16px;width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);font:500 15px "Onest",system-ui,sans-serif;cursor:pointer}
-.reset:hover{border-color:var(--metal)}
-.reset:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:16px;margin-top:8px}
+.running{color:var(--muted);font-size:15px}
+.running b{color:var(--ink);font-weight:600}
+.nav{display:flex;gap:10px}
+.btn{padding:11px 18px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);font-size:15px;font-weight:500;cursor:pointer}
+.btn:hover{border-color:var(--metal)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.btn.primary:hover{opacity:.9}
+.btn:focus-visible,.icon-btn:focus-visible,.add:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+.result{background:var(--board);color:#F7F8F6;border-radius:14px;padding:20px 20px 12px;margin:0 0 18px;box-shadow:0 0 0 5px var(--metal) inset}
+.result .t{font:700 clamp(34px,5vw,46px)/1.05 "Unbounded","Onest",system-ui,sans-serif;color:var(--signal);text-shadow:0 0 18px color-mix(in srgb,var(--signal) 45%,transparent);margin:0 0 16px}
+.result .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid rgba(255,255,255,.14)}
+.result .row small{display:block;opacity:.65;font-size:13px}
+.result .row b{white-space:nowrap}
+.picks{margin:0 0 18px;padding:0;list-style:none;display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:15px}
+.picks dt{color:var(--muted)}
+.picks dd{margin:0;font-weight:500}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>Калькулятор вывески</h1>
-    <p>Укажите размеры и выберите материалы — стоимость пересчитывается сразу. Цена каждого блока равна размеру, умноженному на сумму выбранных вариантов.</p>
+    <p>Соберите вывеску по шагам: схема покажет, что именно вы выбираете, а стоимость пересчитается сразу.</p>
   </header>
 
-  <div class="grid">
-    <form id="calc" onsubmit="return false">
-      <!-- Буквы -->
-      <section class="group" data-block="letters">
-        <h2>Буквы</h2>
-        <p class="hint">Цены вариантов указаны за 1 см высоты.</p>
-        <div class="lrows" id="lrows"></div>
-        <button type="button" class="add" id="addRow"><b aria-hidden="true">+</b> Добавить группу букв</button>
-        <div class="size">
-          <label for="lettersH">Суммарная высота всех букв</label>
-          <div class="field calc"><input id="lettersH" type="number" disabled value="0"><span class="unit">см</span></div>
-        </div>
-        <fieldset><legend>Лицо</legend><div class="opts">
-          <label class="opt"><input type="radio" name="face" value="20" data-label="Прозрачный акрил" checked><span>Прозрачный акрил<small>20 ₽/см</small></span></label>
-          <label class="opt"><input type="radio" name="face" value="20" data-label="Молочный акрил"><span>Молочный акрил<small>20 ₽/см</small></span></label>
-          <label class="opt"><input type="radio" name="face" value="25" data-label="Акрил + плёнка"><span>Акрил + плёнка<small>25 ₽/см</small></span></label>
-        </div></fieldset>
-        <fieldset><legend>Борт</legend><div class="opts">
-          <label class="opt"><input type="radio" name="side" value="40" data-label="Алюминиевый" checked><span>Алюминиевый<small>40 ₽/см</small></span></label>
-          <label class="opt"><input type="radio" name="side" value="20" data-label="ПВХ"><span>ПВХ<small>20 ₽/см</small></span></label>
-        </div></fieldset>
-        <fieldset><legend>Основание</legend><div class="opts">
-          <label class="opt"><input type="radio" name="base" value="15" data-label="Алюминий листовой" checked><span>Алюминий листовой<small>15 ₽/см</small></span></label>
-          <label class="opt"><input type="radio" name="base" value="10" data-label="ПВХ"><span>ПВХ<small>10 ₽/см</small></span></label>
-        </div></fieldset>
-      </section>
+  <main id="s1">
+    <p class="lead">На чём будут держаться буквы?</p>
+    <div class="choose">
+      <button class="card" data-basis="frame"><div id="c1"></div><b>На раме</b><span>Объёмные буквы на каркасе из труб — крепятся к стене или потолку</span></button>
+      <button class="card" data-basis="backing"><div id="c2"></div><b>На подложке</b><span>Буквы на композитном коробе, который монтируется на фасад</span></button>
+    </div>
+  </main>
 
-      <!-- Основа -->
-      <section class="group">
-        <h2>Основа</h2>
-        <p class="hint">Цены вариантов указаны за 1 м².</p>
-
-        <div class="sub" data-block="frame">
-          <h3>Рама</h3>
-          <div class="dims" data-area="frameA">
-            <label class="field"><span class="tag">Ш</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="w" aria-label="Ширина рамы, см"><span class="unit">см</span></label>
-            <label class="field"><span class="tag">В</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="h" aria-label="Высота рамы, см"><span class="unit">см</span></label>
-            <label class="field"><span class="tag">Г</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="d" aria-label="Глубина рамы, см"><span class="unit">см</span></label>
-          </div>
-          <div class="size">
-            <label for="frameA">Общая площадь рамы</label>
-            <div class="field calc"><input id="frameA" type="number" disabled value="0"><span class="unit">м²</span></div>
-          </div>
-          <fieldset><legend>Монтаж</legend><div class="opts">
-            <label class="opt"><input type="radio" name="mount" value="0" data-label="К стене" checked><span>К стене<small>0 ₽/м²</small></span></label>
-            <label class="opt"><input type="radio" name="mount" value="200" data-label="К потолку"><span>К потолку<small>200 ₽/м²</small></span></label>
-          </div></fieldset>
-          <fieldset><legend>Вариант проводки</legend><div class="opts">
-            <label class="opt"><input type="radio" name="wiring" value="1000" data-label="Внутри рамы" checked><span>Внутри рамы<small>1 000 ₽/м²</small></span></label>
-            <label class="opt"><input type="radio" name="wiring" value="200" data-label="Кабель-канал"><span>Кабель-канал<small>200 ₽/м²</small></span></label>
-          </div></fieldset>
-        </div>
-
-        <div class="sub" data-block="backing">
-          <h3>Подложка</h3>
-          <div class="dims" data-area="backA">
-            <label class="field"><span class="tag">Ш</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="w" aria-label="Ширина подложки, см"><span class="unit">см</span></label>
-            <label class="field"><span class="tag">В</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="h" aria-label="Высота подложки, см"><span class="unit">см</span></label>
-            <label class="field"><span class="tag">Г</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="d" aria-label="Глубина подложки, см"><span class="unit">см</span></label>
-          </div>
-          <div class="size">
-            <label for="backA">Общая площадь подложки</label>
-            <div class="field calc"><input id="backA" type="number" disabled value="0"><span class="unit">м²</span></div>
-          </div>
-          <fieldset><legend>Материал</legend><div class="opts">
-            <label class="opt"><input type="radio" name="material" value="600" data-label="НГ композитный материал" checked><span>НГ композитный материал<small>600 ₽/м²</small></span></label>
-            <label class="opt"><input type="radio" name="material" value="400" data-label="Композитный материал"><span>Композитный материал<small>400 ₽/м²</small></span></label>
-          </div></fieldset>
-          <fieldset><legend>Каркас</legend><div class="opts">
-            <label class="opt"><input type="radio" name="carcass" value="300" data-label="Металлический" checked><span>Металлический<small>300 ₽/м²</small></span></label>
-            <label class="opt"><input type="radio" name="carcass" value="500" data-label="Алюминиевый"><span>Алюминиевый<small>500 ₽/м²</small></span></label>
-          </div></fieldset>
-          <fieldset><legend>Покрытие</legend><div class="opts">
-            <label class="opt"><input type="radio" name="coating" value="0" data-label="Цвет по RAL" checked><span>Цвет по RAL<small>0 ₽/м²</small></span></label>
-            <label class="opt"><input type="radio" name="coating" value="300" data-label="Плёнка Oracal"><span>Плёнка Oracal<small>300 ₽/м²</small></span></label>
-          </div></fieldset>
-        </div>
-      </section>
-    </form>
-
-    <aside>
-      <div class="board" aria-live="polite">
-        <p class="cap">Итоговая стоимость</p>
-        <p class="total" id="total">0 ₽</p>
-        <div class="rows">
-          <div class="row"><span>Буквы<span class="f" id="fLetters"></span></span><b id="sLetters">0 ₽</b></div>
-          <div class="row"><span>Рама<span class="f" id="fFrame"></span></span><b id="sFrame">0 ₽</b></div>
-          <div class="row"><span>Подложка<span class="f" id="fBack"></span></span><b id="sBack">0 ₽</b></div>
-        </div>
+  <main id="s2" hidden>
+    <div class="stage" id="stage">
+      <div class="pic">
+        <div id="pic"></div>
+        <div class="cap"><b id="picName"></b><button type="button" id="change">Сменить основу</button></div>
       </div>
-      <button type="button" class="reset" id="reset">Сбросить значения</button>
-    </aside>
-  </div>
+      <section class="panel" id="panel" aria-live="polite"></section>
+    </div>
+  </main>
 </div>
 
 <script>
+/* ========= Данные ========= */
+const OPTS = {
+  mount:   {q:'Как крепим раму?', unit:'м²', o:[
+    ['wall','К стене',0,'Кронштейны на фасаде здания'],
+    ['ceiling','К потолку',200,'Подвесы к козырьку или потолку']]},
+  wiring:  {q:'Как прокладываем проводку?', unit:'м²', o:[
+    ['inside','Внутри рамы',1000,'Провод спрятан в трубе, снаружи не виден'],
+    ['channel','Кабель-канал',200,'Провод идёт в коробе вдоль рамы']]},
+  face:    {q:'Из чего делаем лицо букв?', unit:'см', o:[
+    ['clear','Прозрачный акрил',20,'Сквозь лицо видна подсветка'],
+    ['milky','Молочный акрил',20,'Ровное мягкое свечение'],
+    ['film','Акрил + плёнка',25,'Цветное лицо в фирменный цвет']]},
+  side:    {q:'Какой борт у букв?', unit:'см', o:[
+    ['alu','Алюминиевый',40,'Прочный, с металлическим блеском'],
+    ['pvc','ПВХ',20,'Лёгкий и недорогой']]},
+  base:    {q:'Из чего основание букв?', unit:'см', o:[
+    ['alu','Алюминий листовой',15,'Жёсткая задняя стенка'],
+    ['pvc','ПВХ',10,'Лёгкая пластиковая задняя стенка']]},
+  material:{q:'Из какого материала подложка?', unit:'м²', o:[
+    ['ng','НГ композитный материал',600,'Негорючий, с минеральным ядром'],
+    ['comp','Композитный материал',400,'Стандартный, с полиэтиленовым ядром']]},
+  carcass: {q:'Какой каркас внутри подложки?', unit:'м²', o:[
+    ['steel','Металлический',300,'Стальной профиль'],
+    ['alu','Алюминиевый',500,'Легче стального, не ржавеет']]},
+  coating: {q:'Как покрываем подложку?', unit:'м²', o:[
+    ['ral','Цвет по RAL',0,'Покраска в цвет из каталога RAL'],
+    ['oracal','Плёнка Oracal',300,'Оклейка виниловой плёнкой']]},
+};
+const STEPS = {
+  frame:   ['mount','wiring','size','face','side','base','result'],
+  backing: ['dims','material','carcass','coating','size','face','side','base','result'],
+};
+const NAMES = {mount:'Монтаж',wiring:'Проводка',size:'Размер букв',face:'Лицо',side:'Борт',base:'Основание',
+  dims:'Габариты',material:'Материал',carcass:'Каркас',coating:'Покрытие',result:'Итог'};
+
+const fresh = () => ({basis:null, step:0,
+  mount:'wall', wiring:'inside', face:'clear', side:'alu', base:'alu',
+  material:'ng', carcass:'steel', coating:'ral',
+  logoW:'', groups:[{h:'',n:''}], dims:{w:'',h:'',d:''}});
+let S = fresh();
+
+/* ========= Расчёт ========= */
+const num = v => { const x = parseFloat(String(v).replace(',','.')); return isFinite(x) && x > 0 ? x : 0; };
+const price = (key) => OPTS[key].o.find(o => o[0] === S[key])[2];
+const optLabel = (key) => OPTS[key].o.find(o => o[0] === S[key])[1];
 const n2 = n => new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(n);
-const fmt = n => n2(n) + ' ₽';
-const val = el => { const v = parseFloat(String(el.value).replace(',','.')); return isFinite(v) && v > 0 ? v : 0; };
-const pick = name => Number(document.querySelector(`input[name="${name}"]:checked`).value);
+const rub = n => n2(Math.round(n*100)/100) + ' ₽';
 
-/* Площадь по размерам Ш×В×Г (в см), результат в м².
-   Считается как лицевая сторона + боковые стенки (без задней):
-   Ш×В + 2×Г×(Ш+В). Если нужна другая формула — поменяйте только эту функцию. */
-function areaFromDims(w, h, d){
-  return (w*h + 2*d*(w+h)) / 10000;
-}
-
-/* Группы букв */
-const lrows = document.getElementById('lrows');
-function addLetterRow(){
-  const row = document.createElement('div');
-  row.className = 'lrow';
-  row.innerHTML = `
-    <label class="field"><span class="tag">Высота</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-l="h" aria-label="Высота буквы, см"><span class="unit">см</span></label>
-    <label class="field"><span class="tag">Кол-во</span><input type="number" min="0" step="1" inputmode="numeric" placeholder="0" data-l="n" aria-label="Количество букв"><span class="unit">шт</span></label>
-    <span class="eq"></span>
-    <button type="button" class="icon-btn" aria-label="Удалить группу" title="Удалить группу">×</button>`;
-  row.querySelector('button').addEventListener('click', () => { row.remove(); syncRemove(); calc(); });
-  lrows.appendChild(row);
-  syncRemove();
-  return row;
-}
-function syncRemove(){
-  const rows = lrows.querySelectorAll('.lrow');
-  rows.forEach(r => r.querySelector('.icon-btn').style.visibility = rows.length > 1 ? 'visible' : 'hidden');
-}
-document.getElementById('addRow').addEventListener('click', () => {
-  addLetterRow().querySelector('input').focus();
-});
+/* Площадь рамы, м²: ширина логотипа × наибольшая высота буквы (см). */
+const frameArea = (w, maxH) => w * maxH / 10000;
+/* Площадь подложки, м²: лицевая сторона + боковые стенки (без задней), размеры в см. */
+const backingArea = (w, h, d) => (w*h + 2*d*(w+h)) / 10000;
 
 function calc(){
-  let h = 0;
-  lrows.querySelectorAll('.lrow').forEach(r => {
-    const sub = val(r.querySelector('[data-l="h"]')) * val(r.querySelector('[data-l="n"]'));
-    r.querySelector('.eq').textContent = sub ? `= ${n2(sub)} см` : '';
-    h += sub;
-  });
-  document.getElementById('lettersH').value = +h.toFixed(2);
-
-  const areas = {};
-  document.querySelectorAll('.dims').forEach(g => {
-    const get = k => val(g.querySelector(`[data-dim="${k}"]`));
-    const a = areaFromDims(get('w'), get('h'), get('d'));
-    areas[g.dataset.area] = a;
-    document.getElementById(g.dataset.area).value = +a.toFixed(4);
-  });
-  const fa = areas.frameA || 0, ba = areas.backA || 0;
-
-  const lk = pick('face') + pick('side') + pick('base');
-  const fk = pick('mount') + pick('wiring');
-  const bk = pick('material') + pick('carcass') + pick('coating');
-  const L = h * lk, F = fa * fk, B = ba * bk;
-
-  document.getElementById('sLetters').textContent = fmt(L);
-  document.getElementById('sFrame').textContent = fmt(F);
-  document.getElementById('sBack').textContent = fmt(B);
-  document.getElementById('fLetters').textContent = `${n2(h)} см × ${n2(lk)} ₽`;
-  document.getElementById('fFrame').textContent = `${n2(fa)} м² × ${n2(fk)} ₽`;
-  document.getElementById('fBack').textContent = `${n2(ba)} м² × ${n2(bk)} ₽`;
-  document.getElementById('total').textContent = fmt(L + F + B);
+  let sumH = 0, maxH = 0;
+  S.groups.forEach(g => { const h = num(g.h), n = num(g.n); sumH += h*n; if (n > 0 && h > maxH) maxH = h; });
+  const lk = price('face') + price('side') + price('base');
+  const L = sumH * lk;
+  let area, k;
+  if (S.basis === 'frame'){ area = frameArea(num(S.logoW), maxH); k = price('mount') + price('wiring'); }
+  else { area = backingArea(num(S.dims.w), num(S.dims.h), num(S.dims.d)); k = price('material') + price('carcass') + price('coating'); }
+  const B = area * k;
+  return {sumH, maxH, lk, L, area, k, B, total: L + B};
 }
 
-const form = document.getElementById('calc');
-form.addEventListener('input', calc);
-form.addEventListener('change', calc);
-document.getElementById('reset').addEventListener('click', () => {
-  form.reset();
-  lrows.innerHTML = '';
-  addLetterRow();
-  calc();
+/* ========= Рисунки ========= */
+const FONT = `font-family="Unbounded,Onest,system-ui,sans-serif" font-weight="700"`;
+const FACE = {
+  clear:{fill:'#DDEEFB', stroke:'#6E9FC6', op:.7},
+  milky:{fill:'#FFFFFF', stroke:'#E2E2E2', op:1, glow:true},
+  film: {fill:'#D8272F', stroke:'#A81C22', op:1},
+};
+const SIDE = {alu:'#9AA1A8', pvc:'#F1F0EB'};
+const BASE = {alu:'#B4BAC1', pvc:'#FAFAF6'};
+
+const defs = () => `<defs>
+  <pattern id="brick" width="40" height="20" patternUnits="userSpaceOnUse">
+    <rect width="40" height="20" fill="#E4D6CD"/>
+    <path d="M0 .5H40M0 10.5H40M10 0V10M30 10V20" stroke="#CDBBAF" stroke-width="1"/>
+  </pattern>
+  <filter id="glw" x="-15%" y="-40%" width="130%" height="180%"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".42" stop-color="#fff" stop-opacity="0"/>
+    <stop offset=".5" stop-color="#fff" stop-opacity=".28"/><stop offset=".58" stop-color="#fff" stop-opacity="0"/>
+    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+</defs>`;
+
+function tag(x, y, t, hot, align='l'){
+  const w = t.length * 6.4 + 18;
+  if (align === 'r') x -= w; if (align === 'c') x -= w/2;
+  return `<g><rect x="${x}" y="${y}" width="${w}" height="21" rx="10.5" fill="${hot?'#F2C230':'#FFFFFF'}" stroke="#1D2125" stroke-opacity=".2"/>
+  <text x="${x+w/2}" y="${y+14.5}" text-anchor="middle" font-family="Onest,system-ui,sans-serif" font-size="11.5" font-weight="600" fill="#1D2125">${t}</text></g>`;
+}
+const hDim = (x1,x2,y,label) => `<path d="M${x1} ${y}H${x2}M${x1} ${y-6}V${y+6}M${x2} ${y-6}V${y+6}" stroke="#1D2125" stroke-width="1.4" fill="none"/>${tag((x1+x2)/2, y+6, label, true, 'c')}`;
+const vDim = (x,y1,y2,label,side='r') => `<path d="M${x} ${y1}V${y2}M${x-6} ${y1}H${x+6}M${x-6} ${y2}H${x+6}" stroke="#1D2125" stroke-width="1.4" fill="none"/>${side==='top' ? tag(Math.max(4, x-12), y1-27, label, true) : tag(side==='r'?x+8:x-8, (y1+y2)/2-10, label, true, side==='r'?'l':'r')}`;
+
+function letters(x, y, size, len, depth=6){
+  const f = FACE[S.face], side = SIDE[S.side];
+  const a = `${FONT} font-size="${size}" text-anchor="middle" textLength="${len}" lengthAdjust="spacingAndGlyphs"`;
+  let out = '';
+  for (let i = depth; i >= 1; i--) out += `<text x="${x+i}" y="${y+i}" ${a} fill="${side}"${i===depth?` stroke="#00000022" stroke-width=".8"`:''}>ВЫВЕСКА</text>`;
+  out += `<text x="${x}" y="${y}" ${a} fill="${f.fill}" fill-opacity="${f.op}" stroke="${f.stroke}" stroke-width="1.2"${f.glow?' filter="url(#glw)"':''}>ВЫВЕСКА</text>`;
+  return out;
+}
+const dim = (on) => on ? '' : ' opacity=".28"';
+
+function frameSVG(f){
+  const ceil = S.mount === 'ceiling', c = calc();
+  const posts = [56,128,200,272,344];
+  const show = k => !f || f === 'size' || f === k || (f === 'mount' && k === 'frame') || (f === 'wiring' && k === 'frame');
+  let s = `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Эскиз вывески на раме">${defs()}`;
+  s += ceil
+    ? `<rect width="400" height="300" fill="#DCE3E9"/><rect width="400" height="46" fill="#A9ADB2"/><rect y="46" width="400" height="5" fill="#8B9095"/>`
+    : `<rect width="400" height="300" fill="url(#brick)"/>`;
+  // крепление
+  let m = '';
+  if (ceil) [56,200,344].forEach(x => m += `<rect x="${x-9}" y="46" width="18" height="6" fill="#4F555C"/><line x1="${x}" y1="51" x2="${x}" y2="116" stroke="#4F555C" stroke-width="3"/>`);
+  else posts.forEach(x => m += `<rect x="${x-7}" y="100" width="14" height="9" rx="2" fill="#4F555C"/><rect x="${x-7}" y="205" width="14" height="9" rx="2" fill="#4F555C"/>`);
+  s += `<g${dim(show('mount'))}>${m}</g>`;
+  // рама
+  let fr = posts.map(x => `<line x1="${x}" y1="108" x2="${x}" y2="206" stroke="#8C939A" stroke-width="4" stroke-linecap="round"/>`).join('');
+  fr += `<line x1="44" y1="118" x2="356" y2="118" stroke="#8C939A" stroke-width="7" stroke-linecap="round"/><line x1="44" y1="196" x2="356" y2="196" stroke="#8C939A" stroke-width="7" stroke-linecap="round"/>`;
+  s += `<g${dim(show('frame'))}>${fr}</g>`;
+  // проводка
+  let w = '';
+  if (S.wiring === 'inside'){
+    w += `<line x1="46" y1="118" x2="354" y2="118" stroke="#F2C230" stroke-width="2" stroke-dasharray="7 5"/><line x1="46" y1="196" x2="354" y2="196" stroke="#F2C230" stroke-width="2" stroke-dasharray="7 5"/>`;
+    w += `<path d="M356 196 Q366 214 372 232" stroke="#1D2125" stroke-width="2" fill="none"/>`;
+  } else {
+    w += `<rect x="44" y="203" width="312" height="10" rx="2" fill="#FBFBFB" stroke="#BDBDBD"/>`;
+    w += `<path d="M356 208 Q366 220 372 232" stroke="#1D2125" stroke-width="2" fill="none"/>`;
+  }
+  w += `<rect x="360" y="232" width="28" height="18" rx="3" fill="#4F555C"/><text x="374" y="245" text-anchor="middle" font-family="Onest,sans-serif" font-size="9" font-weight="600" fill="#fff">БП</text>`;
+  s += `<g${dim(show('wiring'))}>${w}</g>`;
+  // буквы
+  s += `<g${dim(!f || f === 'size')}>${letters(200, 180, 64, 292)}</g>`;
+  // подписи
+  if (f === 'mount') s += ceil ? tag(200, 62, 'подвесы к потолку', true, 'c') : tag(200, 222, 'кронштейны к стене', true, 'c');
+  if (f === 'wiring') s += S.wiring === 'inside' ? tag(200, 226, 'провод внутри трубы', true, 'c') : tag(200, 226, 'кабель-канал вдоль рамы', true, 'c');
+  if (f === 'size'){
+    s += hDim(44, 356, 262, `ширина логотипа ${num(S.logoW) ? n2(num(S.logoW)) : '?'} см`);
+    s += vDim(24, 134, 180, `h ${c.maxH ? n2(c.maxH) : '?'} см`);
+  }
+  return s + '</svg>';
+}
+
+function backingSVG(f){
+  const c = calc(), X=44, Y=100, W=300, H=118, D=14;
+  const face = S.coating === 'oracal' ? '#2F3B57' : '#2B2F36';
+  const sideC = S.coating === 'oracal' ? '#1E2638' : '#1A1D22';
+  let s = `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Эскиз вывески на подложке">${defs()}<rect width="400" height="300" fill="url(#brick)"/>`;
+  // короб
+  s += `<polygon points="${X},${Y+H} ${X+W},${Y+H} ${X+W+D},${Y+H+D} ${X+D},${Y+H+D}" fill="${sideC}"/>`;
+  s += `<polygon points="${X+W},${Y} ${X+W+D},${Y+D} ${X+W+D},${Y+H+D} ${X+W},${Y+H}" fill="${sideC}"/>`;
+  s += `<rect x="${X}" y="${Y}" width="${W}" height="${H}" fill="${face}"/>`;
+  if (S.coating === 'oracal'){
+    s += `<rect x="${X}" y="${Y}" width="${W}" height="${H}" fill="url(#sheen)"/>`;
+    s += `<polygon points="${X},${Y} ${X+30},${Y} ${X},${Y+30}" fill="#C9CED4"/><polygon points="${X+30},${Y} ${X},${Y+30} ${X+22},${Y+24}" fill="#44527A"/>`;
+  }
+  // каркас в вырезе
+  if (f === 'carcass'){
+    const cc = S.carcass === 'steel' ? '#5B6168' : '#CDD2D8';
+    s += `<rect x="64" y="114" width="160" height="90" fill="#121417" stroke="#F2C230" stroke-width="2" stroke-dasharray="6 4"/>`;
+    [84,124,164,204].forEach(x => s += `<line x1="${x}" y1="116" x2="${x}" y2="202" stroke="${cc}" stroke-width="6"/>`);
+    [128,190].forEach(y => s += `<line x1="66" y1="${y}" x2="222" y2="${y}" stroke="${cc}" stroke-width="6"/>`);
+    if (S.carcass === 'steel') [84,124,164,204].forEach(x => [128,190].forEach(y => s += `<circle cx="${x}" cy="${y}" r="3.2" fill="#8C939A"/>`));
+  }
+  // буквы
+  s += `<g${dim(!f || f === 'size' || f === 'coating')}>${letters(194, 176, 52, 236, 5)}</g>`;
+  // материал: срез листа
+  if (f === 'material'){
+    const core = S.material === 'ng' ? '#B7AF9F' : '#202327';
+    s += `<line x1="${X+W}" y1="${Y}" x2="330" y2="80" stroke="#1D2125" stroke-width="1.4"/>`;
+    s += `<clipPath id="cut"><circle cx="318" cy="56" r="42"/></clipPath><circle cx="318" cy="56" r="45" fill="#fff" stroke="#1D2125" stroke-opacity=".25"/>`;
+    s += `<g clip-path="url(#cut)"><rect x="270" y="10" width="100" height="100" fill="#F3F4F5"/><rect x="270" y="36" width="100" height="7" fill="#C9CED4"/><rect x="270" y="43" width="100" height="26" fill="${core}"/><rect x="270" y="69" width="100" height="7" fill="#C9CED4"/>`;
+    if (S.material === 'ng') for (let i = 0; i < 40; i++) s += `<circle cx="${276 + (i*37)%88}" cy="${46 + (i*13)%21}" r="1.3" fill="#8E866F"/>`;
+    s += `</g>`;
+    s += tag(262, 40, S.material === 'ng' ? 'минеральное ядро' : 'полиэтиленовое ядро', true, 'r');
+    s += tag(262, 64, 'алюминиевые листы', false, 'r');
+  }
+  if (f === 'carcass') s += tag(144, 232, S.carcass === 'steel' ? 'стальной профиль' : 'алюминиевый профиль', true, 'c');
+  if (f === 'coating') s += tag(194, 244, S.coating === 'oracal' ? 'плёнка Oracal' : 'покраска по RAL', true, 'c');
+  if (f === 'dims'){
+    const d = S.dims, v = x => num(x) ? n2(num(x)) : '?';
+    s += hDim(X, X+W, 256, `Ш ${v(d.w)} см`);
+    s += vDim(26, Y, Y+H, `В ${v(d.h)} см`, 'top');
+    s += `<path d="M${X+W+4} ${Y-10}L${X+W+D+4} ${Y+D-10}" stroke="#1D2125" stroke-width="1.4"/>` + tag(X+W+D+6, Y-24, `Г ${v(d.d)}`, true, 'r');
+  }
+  if (f === 'size') s += vDim(30, 138, 176, `h ${c.maxH ? n2(c.maxH) : '?'} см`, 'top');
+  return s + '</svg>';
+}
+
+function letterSVG(f){
+  const fc = FACE[S.face], sc = SIDE[S.side], bc = BASE[S.base];
+  const a = `${FONT} font-size="150" text-anchor="middle"`;
+  const P = t => [150 + t*0.9, 240 - t*0.55];
+  let s = `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Схема объёмной буквы в разобранном виде">${defs()}<rect width="400" height="300" fill="#E6E9EC"/>`;
+  s += `<ellipse cx="205" cy="262" rx="150" ry="14" fill="#1D2125" opacity=".08"/>`;
+  // основание
+  let [x, y] = P(120);
+  s += `<g${dim(f==='base')}><text x="${x}" y="${y}" ${a} fill="${bc}" stroke="#8C939A" stroke-width="1.2">А</text></g>`;
+  // борт
+  let side = '';
+  for (let t = 76; t >= 50; t -= 1.5){ [x, y] = P(t); side += `<text x="${x}" y="${y}" ${a} fill="${sc}">А</text>`; }
+  [x, y] = P(50); side += `<text x="${x}" y="${y}" ${a} fill="none" stroke="#00000030" stroke-width="1">А</text>`;
+  s += `<g${dim(f==='side')}>${side}</g>`;
+  // лицо
+  [x, y] = P(0);
+  s += `<g${dim(f==='face')}><text x="${x}" y="${y}" ${a} fill="${fc.fill}" fill-opacity="${fc.op}" stroke="${fc.stroke}" stroke-width="1.6"${fc.glow?' filter="url(#glw)"':''}>А</text></g>`;
+  s += tag(370, 38, 'основание', f==='base', 'r');
+  s += tag(378, 150, 'борт', f==='side', 'r');
+  s += tag(24, 250, 'лицо', f==='face');
+  return s + '</svg>';
+}
+
+/* уникальные id, чтобы узоры не терялись, когда один из рисунков скрыт */
+let uid = 0;
+const uniq = svg => { const u = '_' + (++uid); return svg.replace(/(id="|url\(#)(brick|glw|sheen|cut)/g, `$1$2${u}`); };
+
+function picture(step){
+  if (['face','side','base'].includes(step)) return uniq(letterSVG(step));
+  const f = step === 'result' ? null : step;
+  return uniq(S.basis === 'frame' ? frameSVG(f) : backingSVG(f));
+}
+
+/* ========= Экраны ========= */
+const $ = id => document.getElementById(id);
+const steps = () => STEPS[S.basis];
+const cur = () => steps()[S.step];
+
+function renderStart(){
+  const keep = S.basis; S.basis = 'frame'; $('c1').innerHTML = uniq(frameSVG(null));
+  S.basis = 'backing'; $('c2').innerHTML = uniq(backingSVG(null)); S.basis = keep;
+}
+
+function drawPic(){ $('pic').innerHTML = picture(cur()); }
+
+function running(){
+  const c = calc();
+  const el = document.querySelector('.running b'); if (el) el.textContent = rub(c.total);
+}
+
+function optionsHTML(key){
+  const d = OPTS[key];
+  return `<div class="opts" role="radiogroup" aria-label="${d.q}">` + d.o.map(([k, label, p, desc]) =>
+    `<label class="opt"><input type="radio" name="${key}" value="${k}"${S[key]===k?' checked':''}>
+     <span><b>${label}</b><i>${p ? '+' + n2(p) : '0'} ₽/${d.unit}</i><small>${desc}</small></span></label>`).join('') + '</div>';
+}
+
+function sizeHTML(){
+  const c = calc();
+  let h = `<h2>Какого размера буквы?</h2><p class="hint">Добавьте группу для каждого размера. Например: 9 букв по 40 см и 8 букв по 25 см.</p>`;
+  if (S.basis === 'frame') h += `<div class="size"><label for="logoW">Ширина логотипа</label><div class="field"><input id="logoW" type="number" min="0" inputmode="decimal" placeholder="0" value="${S.logoW}"><span class="unit">см</span></div></div>`;
+  h += `<div class="lrows">` + S.groups.map((g, i) => `<div class="lrow" data-i="${i}">
+    <label class="field"><span class="tag">Высота</span><input type="number" min="0" inputmode="decimal" placeholder="0" data-g="h" value="${g.h}" aria-label="Высота буквы, см"><span class="unit">см</span></label>
+    <label class="field"><span class="tag">Кол-во</span><input type="number" min="0" inputmode="numeric" placeholder="0" data-g="n" value="${g.n}" aria-label="Количество букв"><span class="unit">шт</span></label>
+    <span class="eq"></span>
+    <button type="button" class="icon-btn" data-del="${i}" aria-label="Удалить группу"${S.groups.length < 2 ? ' style="visibility:hidden"' : ''}>×</button></div>`).join('') + `</div>`;
+  h += `<button type="button" class="add" id="addG"><b aria-hidden="true">+</b> Добавить группу букв</button>`;
+  h += `<div class="size"><span class="l">Суммарная высота всех букв</span><div class="field calc"><input id="sumH" disabled value="${n2(c.sumH)}"><span class="unit">см</span></div></div>`;
+  if (S.basis === 'frame') h += `<div class="size"><span class="l">Площадь рамы</span><div class="field calc"><input id="areaF" disabled value="${n2(c.area)}"><span class="unit">м²</span></div></div>`;
+  return h;
+}
+
+function dimsHTML(){
+  const c = calc(), d = S.dims;
+  return `<h2>Какого размера подложка?</h2><p class="hint">Ширина, высота и глубина короба в сантиметрах. Площадь посчитается сама.</p>
+  <div class="dims">
+    <label class="field"><span class="tag">Ш</span><input type="number" min="0" inputmode="decimal" placeholder="0" data-d="w" value="${d.w}" aria-label="Ширина, см"><span class="unit">см</span></label>
+    <label class="field"><span class="tag">В</span><input type="number" min="0" inputmode="decimal" placeholder="0" data-d="h" value="${d.h}" aria-label="Высота, см"><span class="unit">см</span></label>
+    <label class="field"><span class="tag">Г</span><input type="number" min="0" inputmode="decimal" placeholder="0" data-d="d" value="${d.d}" aria-label="Глубина, см"><span class="unit">см</span></label>
+  </div>
+  <div class="size"><span class="l">Площадь подложки</span><div class="field calc"><input id="areaB" disabled value="${n2(c.area)}"><span class="unit">м²</span></div></div>`;
+}
+
+function resultHTML(){
+  const c = calc(), fr = S.basis === 'frame';
+  const keys = fr ? ['mount','wiring','face','side','base'] : ['material','carcass','coating','face','side','base'];
+  return `<h2>Ваша вывеска</h2><p class="hint">Проверьте выбор — любой шаг можно открыть заново по кнопкам сверху.</p>
+  <div class="result"><div class="t">${rub(c.total)}</div>
+    <div class="row"><span>Буквы<small>${n2(c.sumH)} см × ${n2(c.lk)} ₽</small></span><b>${rub(c.L)}</b></div>
+    <div class="row"><span>${fr ? 'Рама' : 'Подложка'}<small>${n2(c.area)} м² × ${n2(c.k)} ₽</small></span><b>${rub(c.B)}</b></div>
+  </div>
+  <dl class="picks">${keys.map(k => `<dt>${NAMES[k]}</dt><dd>${optLabel(k)}</dd>`).join('')}</dl>
+  <div class="nav"><button type="button" class="btn" id="restart">Начать заново</button></div>`;
+}
+
+function renderStep(animate){
+  const st = steps(), k = cur(), last = S.step === st.length - 1;
+  let h = `<ol class="steps">` + st.map((s, i) =>
+    `<li><button type="button" data-go="${i}"${i===S.step?' aria-current="step"':''}${i<S.step?' class="done"':''}>${NAMES[s]}</button></li>`).join('') + `</ol>`;
+  if (!last) h += `<p class="count">Шаг ${S.step + 1} из ${st.length - 1}</p>`;
+  if (OPTS[k]) h += `<h2>${OPTS[k].q}</h2><p class="hint">Цена за 1 ${OPTS[k].unit} — ${OPTS[k].unit === 'см' ? 'суммарной высоты букв' : 'площади основы'}. Переключайте варианты и смотрите на схему.</p>` + optionsHTML(k);
+  else if (k === 'size') h += sizeHTML();
+  else if (k === 'dims') h += dimsHTML();
+  else h += resultHTML();
+  if (!last) h += `<div class="foot"><span class="running">Предварительно: <b></b></span>
+    <div class="nav"><button type="button" class="btn" id="back">Назад</button>
+    <button type="button" class="btn primary" id="next">${S.step === st.length - 2 ? 'Посчитать' : 'Далее'}</button></div></div>`;
+  const p = $('panel');
+  p.innerHTML = h;
+  if (animate){ p.classList.remove('enter'); void p.offsetWidth; p.classList.add('enter'); }
+  updateSize(); running(); drawPic();
+}
+
+function updateSize(){
+  const c = calc();
+  document.querySelectorAll('.lrow').forEach(r => {
+    const g = S.groups[r.dataset.i], sub = num(g.h) * num(g.n);
+    r.querySelector('.eq').textContent = sub ? `= ${n2(sub)} см` : '';
+  });
+  if ($('sumH')) $('sumH').value = n2(c.sumH);
+  if ($('areaF')) $('areaF').value = n2(c.area);
+  if ($('areaB')) $('areaB').value = n2(c.area);
+}
+
+function go(i){
+  S.step = Math.max(0, Math.min(i, steps().length - 1));
+  renderStep(true);
+  if (innerWidth <= 860) $('s2').scrollIntoView({block:'start'});
+}
+
+function openBasis(b){
+  S.basis = b; S.step = 0;
+  $('stage').className = 'stage ' + b;
+  $('picName').textContent = b === 'frame' ? 'На раме' : 'На подложке';
+  $('s1').hidden = true; $('s2').hidden = false;
+  renderStep(true);
+  scrollTo({top:0});
+}
+
+function toStart(){
+  $('s2').hidden = true; $('s1').hidden = false; renderStart(); scrollTo({top:0});
+}
+
+/* ========= События ========= */
+document.querySelectorAll('.card').forEach(c => c.addEventListener('click', () => openBasis(c.dataset.basis)));
+$('change').addEventListener('click', toStart);
+
+$('panel').addEventListener('change', e => {
+  const t = e.target;
+  if (t.type === 'radio'){ S[t.name] = t.value; running(); drawPic(); }
 });
-addLetterRow();
-calc();
+$('panel').addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'logoW') S.logoW = t.value;
+  else if (t.dataset.g){ S.groups[t.closest('.lrow').dataset.i][t.dataset.g] = t.value; }
+  else if (t.dataset.d){ S.dims[t.dataset.d] = t.value; }
+  else return;
+  updateSize(); running(); drawPic();
+});
+$('panel').addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.dataset.go !== undefined) go(+t.dataset.go);
+  else if (t.id === 'next') go(S.step + 1);
+  else if (t.id === 'back'){ S.step === 0 ? toStart() : go(S.step - 1); }
+  else if (t.id === 'addG'){
+    S.groups.push({h:'',n:''}); renderStep(false);
+    const rows = document.querySelectorAll('.lrow'); rows[rows.length-1].querySelector('input').focus();
+  }
+  else if (t.dataset.del !== undefined){ S.groups.splice(+t.dataset.del, 1); renderStep(false); }
+  else if (t.id === 'restart'){ S = fresh(); toStart(); }
+});
+
+renderStart();
 </script>
 </body>
 </html>
