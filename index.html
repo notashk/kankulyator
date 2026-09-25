@@ -38,7 +38,8 @@ header h1{font:700 clamp(28px,4.5vw,44px)/1.1 "Unbounded","Onest",system-ui,sans
 header p{margin:0;color:var(--muted);max-width:62ch}
 
 /* Экран 1 */
-.lead{font:500 clamp(18px,2.4vw,22px)/1.3 "Unbounded","Onest",system-ui,sans-serif;margin:0 0 16px}
+/* подзаголовок общий для обоих экранов — картинка не сдвигается при переходе */
+.lead{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:500 clamp(18px,2.4vw,22px)/1.3 "Unbounded","Onest",system-ui,sans-serif;margin:0 0 16px}
 .choose{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media (max-width:760px){.choose{grid-template-columns:1fr}}
 .card{display:block;width:100%;text-align:left;padding:12px 12px 18px;border:1.5px solid var(--line);border-radius:18px;background:var(--panel);color:var(--ink);cursor:pointer;transition:border-color .15s,transform .15s}
@@ -131,8 +132,9 @@ header p{margin:0;color:var(--muted);max-width:62ch}
     <p>Соберите вывеску по шагам: схема покажет, что именно вы выбираете, а стоимость пересчитается сразу.</p>
   </header>
 
+  <p class="lead" id="lead">На чём будут держаться буквы?</p>
+
   <main id="s1">
-    <p class="lead">На чём будут держаться буквы?</p>
     <div class="choose">
       <button class="card" data-basis="frame"><div id="c1"></div><b>На раме</b><span>Объёмные буквы на каркасе из труб — крепятся к стене или потолку</span></button>
       <button class="card" data-basis="backing"><div id="c2"></div><b>На подложке</b><span>Буквы на композитном коробе, который монтируется на фасад</span></button>
@@ -436,7 +438,8 @@ function resultHTML(){
     <div class="row"><span>${fr ? 'Рама' : 'Подложка'}<small>${n2(c.area)} м² × ${n2(c.k)} ₽</small></span><b>${rub(c.B)}</b></div>
   </div>
   <dl class="picks">${keys.map(k => `<dt>${NAMES[k]}</dt><dd>${optLabel(k)}</dd>`).join('')}</dl>
-  <div class="nav"><button type="button" class="btn" id="restart">Начать заново</button></div>`;
+  <div class="foot"><button type="button" class="btn" id="restart">Начать заново</button>
+    <div class="nav"><button type="button" class="btn primary" id="back">Назад</button></div></div>`;
 }
 
 function renderStep(animate){
@@ -478,12 +481,14 @@ function openBasis(b){
   S.basis = b; S.step = 0;
   $('stage').className = 'stage ' + b;
   $('picName').textContent = b === 'frame' ? 'На раме' : 'На подложке';
+  $('lead').textContent = b === 'frame' ? 'Собираем вывеску на раме' : 'Собираем вывеску на подложке';
   $('s1').hidden = true; $('s2').hidden = false;
   renderStep(true);
   scrollTo({top:0});
 }
 
 function toStart(){
+  $('lead').textContent = 'На чём будут держаться буквы?';
   $('s2').hidden = true; $('s1').hidden = false; renderStart(); scrollTo({top:0});
 }
 
