@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  
 :root{
   --bg:#EEF0EE; --panel:#FFFFFF; --ink:#1D2125; --muted:#5F666D;
   --line:#D5D9DC; --metal:#A7ADB3; --signal:#F2C230; --signal-ink:#1D2125;
@@ -46,6 +45,23 @@ header p{margin:0 0 32px;color:var(--muted);max-width:60ch}
 .size input{width:120px;border:0;background:transparent;color:var(--ink);font:600 18px "Onest",system-ui,sans-serif;padding:10px 12px;outline:none}
 .size .unit{padding:0 12px;color:var(--muted);font-size:14px}
 .size .field:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 25%,transparent)}
+.size input:disabled{color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1;cursor:default}
+.size .field.calc{border-style:dashed;background:transparent}
+.dims{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.dims .field,.lrow .field{display:flex;align-items:center;border:1.5px solid var(--metal);border-radius:10px;background:var(--chip);overflow:hidden}
+.dims .field:focus-within,.lrow .field:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 25%,transparent)}
+.dims .tag,.lrow .tag{padding:0 0 0 12px;color:var(--muted);font-size:14px;font-weight:600}
+.dims input,.lrow input{width:84px;border:0;background:transparent;color:var(--ink);font:600 17px "Onest",system-ui,sans-serif;padding:9px 8px;outline:none}
+.dims .unit,.lrow .unit{padding:0 10px 0 0;color:var(--muted);font-size:13px}
+.lrows{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
+.lrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.lrow .eq{color:var(--muted);font-size:14px;min-width:80px}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
+.icon-btn:hover{border-color:var(--metal);color:var(--ink)}
+.icon-btn:focus-visible,.add:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.add{display:inline-flex;align-items:center;gap:8px;margin:0 0 18px;padding:9px 14px;border-radius:10px;border:1.5px dashed var(--metal);background:transparent;color:var(--ink);font:500 15px "Onest",system-ui,sans-serif;cursor:pointer}
+.add b{font-size:20px;line-height:1}
+.add:hover{border-style:solid}
 fieldset{border:0;margin:0 0 16px;padding:0}
 legend{font-size:14px;color:var(--muted);margin-bottom:8px;padding:0}
 .opts{display:flex;flex-wrap:wrap;gap:8px}
@@ -84,9 +100,11 @@ aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}
       <section class="group" data-block="letters">
         <h2>Буквы</h2>
         <p class="hint">Цены вариантов указаны за 1 см высоты.</p>
+        <div class="lrows" id="lrows"></div>
+        <button type="button" class="add" id="addRow"><b aria-hidden="true">+</b> Добавить группу букв</button>
         <div class="size">
           <label for="lettersH">Суммарная высота всех букв</label>
-          <div class="field"><input id="lettersH" type="number" min="0" step="1" inputmode="decimal" placeholder="0"><span class="unit">см</span></div>
+          <div class="field calc"><input id="lettersH" type="number" disabled value="0"><span class="unit">см</span></div>
         </div>
         <fieldset><legend>Лицо</legend><div class="opts">
           <label class="opt"><input type="radio" name="face" value="20" data-label="Прозрачный акрил" checked><span>Прозрачный акрил<small>20 ₽/см</small></span></label>
@@ -110,9 +128,14 @@ aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}
 
         <div class="sub" data-block="frame">
           <h3>Рама</h3>
+          <div class="dims" data-area="frameA">
+            <label class="field"><span class="tag">Ш</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="w" aria-label="Ширина рамы, см"><span class="unit">см</span></label>
+            <label class="field"><span class="tag">В</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="h" aria-label="Высота рамы, см"><span class="unit">см</span></label>
+            <label class="field"><span class="tag">Г</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="d" aria-label="Глубина рамы, см"><span class="unit">см</span></label>
+          </div>
           <div class="size">
             <label for="frameA">Общая площадь рамы</label>
-            <div class="field"><input id="frameA" type="number" min="0" step="0.1" inputmode="decimal" placeholder="0"><span class="unit">м²</span></div>
+            <div class="field calc"><input id="frameA" type="number" disabled value="0"><span class="unit">м²</span></div>
           </div>
           <fieldset><legend>Монтаж</legend><div class="opts">
             <label class="opt"><input type="radio" name="mount" value="0" data-label="К стене" checked><span>К стене<small>0 ₽/м²</small></span></label>
@@ -126,9 +149,14 @@ aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}
 
         <div class="sub" data-block="backing">
           <h3>Подложка</h3>
+          <div class="dims" data-area="backA">
+            <label class="field"><span class="tag">Ш</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="w" aria-label="Ширина подложки, см"><span class="unit">см</span></label>
+            <label class="field"><span class="tag">В</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="h" aria-label="Высота подложки, см"><span class="unit">см</span></label>
+            <label class="field"><span class="tag">Г</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-dim="d" aria-label="Глубина подложки, см"><span class="unit">см</span></label>
+          </div>
           <div class="size">
             <label for="backA">Общая площадь подложки</label>
-            <div class="field"><input id="backA" type="number" min="0" step="0.1" inputmode="decimal" placeholder="0"><span class="unit">м²</span></div>
+            <div class="field calc"><input id="backA" type="number" disabled value="0"><span class="unit">м²</span></div>
           </div>
           <fieldset><legend>Материал</legend><div class="opts">
             <label class="opt"><input type="radio" name="material" value="600" data-label="НГ композитный материал" checked><span>НГ композитный материал<small>600 ₽/м²</small></span></label>
@@ -162,13 +190,59 @@ aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px)}
 </div>
 
 <script>
-const fmt = n => new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(n) + ' ₽';
-const num = id => { const v = parseFloat(String(document.getElementById(id).value).replace(',','.')); return isFinite(v) && v > 0 ? v : 0; };
-const pick = name => Number(document.querySelector(`input[name="${name}"]:checked`).value);
 const n2 = n => new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(n);
+const fmt = n => n2(n) + ' ₽';
+const val = el => { const v = parseFloat(String(el.value).replace(',','.')); return isFinite(v) && v > 0 ? v : 0; };
+const pick = name => Number(document.querySelector(`input[name="${name}"]:checked`).value);
+
+/* Площадь по размерам Ш×В×Г (в см), результат в м².
+   Считается как лицевая сторона + боковые стенки (без задней):
+   Ш×В + 2×Г×(Ш+В). Если нужна другая формула — поменяйте только эту функцию. */
+function areaFromDims(w, h, d){
+  return (w*h + 2*d*(w+h)) / 10000;
+}
+
+/* Группы букв */
+const lrows = document.getElementById('lrows');
+function addLetterRow(){
+  const row = document.createElement('div');
+  row.className = 'lrow';
+  row.innerHTML = `
+    <label class="field"><span class="tag">Высота</span><input type="number" min="0" step="1" inputmode="decimal" placeholder="0" data-l="h" aria-label="Высота буквы, см"><span class="unit">см</span></label>
+    <label class="field"><span class="tag">Кол-во</span><input type="number" min="0" step="1" inputmode="numeric" placeholder="0" data-l="n" aria-label="Количество букв"><span class="unit">шт</span></label>
+    <span class="eq"></span>
+    <button type="button" class="icon-btn" aria-label="Удалить группу" title="Удалить группу">×</button>`;
+  row.querySelector('button').addEventListener('click', () => { row.remove(); syncRemove(); calc(); });
+  lrows.appendChild(row);
+  syncRemove();
+  return row;
+}
+function syncRemove(){
+  const rows = lrows.querySelectorAll('.lrow');
+  rows.forEach(r => r.querySelector('.icon-btn').style.visibility = rows.length > 1 ? 'visible' : 'hidden');
+}
+document.getElementById('addRow').addEventListener('click', () => {
+  addLetterRow().querySelector('input').focus();
+});
 
 function calc(){
-  const h = num('lettersH'), fa = num('frameA'), ba = num('backA');
+  let h = 0;
+  lrows.querySelectorAll('.lrow').forEach(r => {
+    const sub = val(r.querySelector('[data-l="h"]')) * val(r.querySelector('[data-l="n"]'));
+    r.querySelector('.eq').textContent = sub ? `= ${n2(sub)} см` : '';
+    h += sub;
+  });
+  document.getElementById('lettersH').value = +h.toFixed(2);
+
+  const areas = {};
+  document.querySelectorAll('.dims').forEach(g => {
+    const get = k => val(g.querySelector(`[data-dim="${k}"]`));
+    const a = areaFromDims(get('w'), get('h'), get('d'));
+    areas[g.dataset.area] = a;
+    document.getElementById(g.dataset.area).value = +a.toFixed(4);
+  });
+  const fa = areas.frameA || 0, ba = areas.backA || 0;
+
   const lk = pick('face') + pick('side') + pick('base');
   const fk = pick('mount') + pick('wiring');
   const bk = pick('material') + pick('carcass') + pick('coating');
@@ -183,13 +257,16 @@ function calc(){
   document.getElementById('total').textContent = fmt(L + F + B);
 }
 
-document.getElementById('calc').addEventListener('input', calc);
-document.getElementById('calc').addEventListener('change', calc);
+const form = document.getElementById('calc');
+form.addEventListener('input', calc);
+form.addEventListener('change', calc);
 document.getElementById('reset').addEventListener('click', () => {
-  const f = document.getElementById('calc');
-  f.reset();
+  form.reset();
+  lrows.innerHTML = '';
+  addLetterRow();
   calc();
 });
+addLetterRow();
 calc();
 </script>
 </body>
