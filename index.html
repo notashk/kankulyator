@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Калькулятор стоимости вывески</title>
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
@@ -61,7 +64,7 @@ header p{margin:0;color:var(--muted);max-width:62ch}
 .pic .cap button{border:0;background:none;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:14px;padding:4px}
 .pic .cap button:hover{color:var(--ink)}
 
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 24px 22px;min-height:100%}
+.panel{scroll-margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 24px 22px;min-height:100%}
 .panel.enter{animation:enter .28s ease-out}
 @keyframes enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px;padding:0;list-style:none}
@@ -212,7 +215,7 @@ const fresh = () => ({basis:null, step:0,
   mount:'wall', wiring:'inside', face:'clear', side:'alu', base:'alu',
   material:'ng', carcass:'steel', coating:'ral',
   logoW:'', groups:[{h:'',n:''}], dims:{w:'',h:'',d:''},
-  view:'steps', form:{name:'',email:'',phone:'',telegram:'',whatsapp:'',file:null}});
+  view:'steps', form:{name:'',email:'',phone:'',telegram:'',file:null}});
 let S = fresh();
 
 /* ========= Расчёт ========= */
@@ -476,7 +479,6 @@ function requestHTML(){
       <label class="ff"><span>Email *</span><input class="inp" name="email" type="email" required autocomplete="email" inputmode="email" value="${esc(F.email)}" aria-describedby="emailErr"><span class="err" id="emailErr" hidden></span></label>
       <label class="ff"><span>Телефон</span><input class="inp" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7" value="${esc(F.phone)}"></label>
       <label class="ff"><span>Telegram</span><input class="inp" name="telegram" placeholder="@username" value="${esc(F.telegram)}"></label>
-      <label class="ff"><span>WhatsApp</span><input class="inp" name="whatsapp" type="tel" inputmode="tel" placeholder="+7" value="${esc(F.whatsapp)}"></label>
     </fieldset>
     <div class="ff"><span>Макет <em>— если он уже есть</em></span>
       <div class="upload"><input type="file" id="file" accept=".pdf,.ai,.eps,.cdr,.svg,.png,.jpg,.jpeg"><label for="file"><b aria-hidden="true">+</b> Загрузить макет</label>
@@ -506,7 +508,7 @@ function buildPayload(){
   const c = calc(), fr = S.basis === 'frame';
   const keys = fr ? ['face','side','base','mount','wiring'] : ['face','side','base','material','carcass','coating'];
   const data = new FormData();
-  ['name','email','phone','telegram','whatsapp'].forEach(k => data.append(k, S.form[k].trim()));
+  ['name','email','phone','telegram'].forEach(k => data.append(k, S.form[k].trim()));
   if (S.form.file) data.append('layout', S.form.file);
   data.append('calc', JSON.stringify({
     basis: fr ? 'На раме' : 'На подложке',
@@ -549,6 +551,9 @@ function updateSize(){
   if ($('areaF')) $('areaF').value = n2(c.area);
   if ($('areaB')) $('areaB').value = n2(c.area);
 }
+
+/* на узком экране панель стоит под картинкой — прокручиваем к её началу, чтобы был виден заголовок */
+function panelToTop(){ if (innerWidth <= 860) $('panel').scrollIntoView({block:'start'}); }
 
 function go(i){
   S.view = 'steps';
@@ -599,7 +604,7 @@ $('panel').addEventListener('click', e => {
   }
   else if (t.dataset.del !== undefined){ S.groups.splice(+t.dataset.del, 1); renderStep(false); }
   else if (t.id === 'restart'){ S = fresh(); toStart(); }
-  else if (t.id === 'toRequest'){ S.view = 'request'; renderStep(true); }
+  else if (t.id === 'toRequest'){ S.view = 'request'; renderStep(true); panelToTop(); }
   else if (t.id === 'backRes'){ S.view = 'steps'; renderStep(true); }
 });
 
@@ -632,7 +637,7 @@ $('panel').addEventListener('submit', async e => {
   btn.disabled = true; btn.textContent = 'Отправляем…'; err.hidden = true;
   try {
     await sendRequest(buildPayload());
-    S.view = 'sent'; renderStep(true);
+    S.view = 'sent'; renderStep(true); panelToTop();
   } catch (_) {
     btn.disabled = false; btn.textContent = 'Отправить заявку';
     err.textContent = 'Заявка не отправилась. Проверьте интернет и нажмите «Отправить заявку» ещё раз.'; err.hidden = false;
